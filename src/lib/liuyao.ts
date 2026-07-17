@@ -11,21 +11,23 @@ export type Line = {
 
 export type Trigram = {
   name: string
+  nameEn: string
   symbol: string
   nature: string
+  natureEn: string
   element: string
 }
 
 // 八卦（顺序：乾兑离震巽坎艮坤），symbol 自下而上
 export const trigrams: Trigram[] = [
-  { name: '乾', symbol: '☰', nature: '天', element: '金' },
-  { name: '兑', symbol: '☱', nature: '泽', element: '金' },
-  { name: '离', symbol: '☲', nature: '火', element: '火' },
-  { name: '震', symbol: '☳', nature: '雷', element: '木' },
-  { name: '巽', symbol: '☴', nature: '风', element: '木' },
-  { name: '坎', symbol: '☵', nature: '水', element: '水' },
-  { name: '艮', symbol: '☶', nature: '山', element: '土' },
-  { name: '坤', symbol: '☷', nature: '地', element: '土' },
+  { name: '乾', nameEn: 'Qian', symbol: '☰', nature: '天', natureEn: 'Heaven', element: '金' },
+  { name: '兑', nameEn: 'Dui', symbol: '☱', nature: '泽', natureEn: 'Lake', element: '金' },
+  { name: '离', nameEn: 'Li', symbol: '☲', nature: '火', natureEn: 'Fire', element: '火' },
+  { name: '震', nameEn: 'Zhen', symbol: '☳', nature: '雷', natureEn: 'Thunder', element: '木' },
+  { name: '巽', nameEn: 'Xun', symbol: '☴', nature: '风', natureEn: 'Wind', element: '木' },
+  { name: '坎', nameEn: 'Kan', symbol: '☵', nature: '水', natureEn: 'Water', element: '水' },
+  { name: '艮', nameEn: 'Gen', symbol: '☶', nature: '山', natureEn: 'Mountain', element: '土' },
+  { name: '坤', nameEn: 'Kun', symbol: '☷', nature: '地', natureEn: 'Earth', element: '土' },
 ]
 
 // 三爻阴阳（初,二,三；1=阳 0=阴）→ 八卦索引
@@ -129,6 +131,7 @@ export type DailyScore = { label: string; value: number; tone: string }
 
 export type DailyHexResult = CastResult & {
   keyword: string
+  keywordEn: string
   upperSeed: number
   lowerSeed: number
   changeSeed: number
@@ -170,8 +173,18 @@ export function dailyHexagram(date = new Date()): DailyHexResult {
       ? hexFromLines(lines.map((l) => (l.changing ? !l.yang : l.yang)))
       : null
 
-  const tips = ['少说多做', '先稳后进', '守静观变', '主动沟通', '收敛锋芒', '顺势借力']
-  const keyword = tips[seed % tips.length]
+  const tipsZh = ['少说多做', '先稳后进', '守静观变', '主动沟通', '收敛锋芒', '顺势借力']
+  const tipsEn = [
+    'Speak less, act more',
+    'Steady first, then advance',
+    'Stay still and watch change',
+    'Communicate actively',
+    'Temper the edge',
+    'Ride the current',
+  ]
+  const tipIdx = seed % tipsZh.length
+  const keyword = tipsZh[tipIdx]
+  const keywordEn = tipsEn[tipIdx]
   const movingLabel =
     changingCount === 0
       ? '无动爻'
@@ -205,7 +218,7 @@ export function dailyHexagram(date = new Date()): DailyHexResult {
   return {
     lines, ben, bian, changingCount,
     reading: keyword,
-    keyword, upperSeed, lowerSeed, changeSeed,
+    keyword, keywordEn, upperSeed, lowerSeed, changeSeed,
     tiyong, summary, movingLabel, scores,
   }
 }

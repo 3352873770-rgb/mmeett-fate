@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark'
 import { footerLinks } from '@/data/nav'
 import { useLang } from '@/lib/i18n'
 
@@ -9,8 +10,8 @@ export function SiteFooter() {
       <div className="footer-inner">
         <div>
           <div className="brand" style={{ marginBottom: '0.6rem' }}>
-            <span className="brand-mark" aria-hidden />
-            算了么
+            <BrandMark />
+            <span className="brand-text">算了么</span>
           </div>
           <p className="footer-copy" style={{ maxWidth: '24rem', lineHeight: 1.7 }}>
             {t(
