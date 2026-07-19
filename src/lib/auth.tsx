@@ -2,57 +2,124 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react'
+import { apiFetch } from '@/lib/api'
 
 export type AuthUser = {
   id: string
   name: string
-  email: string
-  member: boolean
+  phone?: string
+  avatar?: string
+  token: string
+  email?: string
+  member?: boolean
 }
 
 type AuthContextValue = {
   user: AuthUser | null
   isAuthenticated: boolean
-  isMember: boolean
   authOpen: boolean
   authMode: 'login' | 'register'
   openAuth: (mode?: 'login' | 'register') => void
   closeAuth: () => void
-  login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, password: string) => Promise<void>
-  logout: () => void
-  upgradeMember: () => void
+  sendSms: (phone: string) => Promise<void>
+  login: (phone: string, smsCode: string) => Promise<void>
+  logout: () => Promise<void>
   requireAuth: (action?: () => void) => void
 }
 
-const STORAGE_KEY = '__suanleme_auth_user__'
+const STORAGE_KEY = '__meet_auth_fortune__'
+
+type StoredAuth = { token: string; user: Omit<AuthUser, 'token'> }
+
+type AuthResponseDto = {
+  token: string
+  userId: string
+  displayName: string
+  phone: string | null
+  avatar: string | null
+}
+
+type UserProfileDto = {
+  id: string
+  displayName: string
+  phone: string | null
+  avatar: string | null
+}
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-function loadUser(): AuthUser | null {
+function loadStored(): AuthUser | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as AuthUser) : null
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as StoredAuth
+    if (!parsed?.token || !parsed?.user?.id) return null
+    return { ...parsed.user, token: parsed.token }
   } catch {
     return null
   }
 }
 
+function persist(next: AuthUser | null) {
+  if (!next) {
+    localStorage.removeItem(STORAGE_KEY)
+    return
+  }
+  const { token, ...user } = next
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, user } satisfies StoredAuth))
+}
+
+function toUser(dto: AuthResponseDto): AuthUser {
+  return {
+    id: dto.userId,
+    name: dto.displayName || dto.phone || '用户',
+    phone: dto.phone ?? undefined,
+    avatar: dto.avatar ?? undefined,
+    token: dto.token,
+    email: dto.phone ?? undefined,
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => loadUser())
+  const [user, setUser] = useState<AuthUser | null>(() => loadStored())
   const [authOpen, setAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
 
-  const persist = (next: AuthUser | null) => {
-    setUser(next)
-    if (next) localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    else localStorage.removeItem(STORAGE_KEY)
-  }
+  useEffect(() => {
+    const token = user?.token
+    if (!token) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const me = await apiFetch<UserProfileDto>(STORAGE_KEY, '/api/auth/me')
+        if (cancelled) return
+        const next: AuthUser = {
+          id: me.id,
+          name: me.displayName || me.phone || '用户',
+          phone: me.phone ?? undefined,
+          avatar: me.avatar ?? undefined,
+          token,
+          email: me.phone ?? undefined,
+        }
+        setUser(next)
+        persist(next)
+      } catch {
+        if (cancelled) return
+        setUser(null)
+        persist(null)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const openAuth = useCallback((mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode)
@@ -64,49 +131,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setPendingAction(null)
   }, [])
 
-  const login = useCallback(
-    async (email: string, _password: string) => {
-      await new Promise((r) => setTimeout(r, 400))
-      const next: AuthUser = {
-        id: 'u_' + Date.now(),
-        name: email.split('@')[0] || '云海用户',
-        email,
-        member: false,
-      }
-      persist(next)
-      setAuthOpen(false)
-      pendingAction?.()
-      setPendingAction(null)
-    },
-    [pendingAction],
-  )
-
-  const register = useCallback(
-    async (name: string, email: string, _password: string) => {
-      await new Promise((r) => setTimeout(r, 500))
-      const next: AuthUser = {
-        id: 'u_' + Date.now(),
-        name: name || email.split('@')[0] || '云海用户',
-        email,
-        member: false,
-      }
-      persist(next)
-      setAuthOpen(false)
-      pendingAction?.()
-      setPendingAction(null)
-    },
-    [pendingAction],
-  )
-
-  const logout = useCallback(() => persist(null), [])
-
-  const upgradeMember = useCallback(() => {
-    setUser((prev) => {
-      if (!prev) return prev
-      const next = { ...prev, member: true }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      return next
+  const sendSms = useCallback(async (phone: string) => {
+    await apiFetch<null>(STORAGE_KEY, '/api/auth/sms/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone }),
     })
+  }, [])
+
+  const login = useCallback(
+    async (phone: string, smsCode: string) => {
+      const dto = await apiFetch<AuthResponseDto>(STORAGE_KEY, '/api/auth/login/phone', {
+        method: 'POST',
+        body: JSON.stringify({ phone, smsCode }),
+      })
+      const next = toUser(dto)
+      setUser(next)
+      persist(next)
+      setAuthOpen(false)
+      pendingAction?.()
+      setPendingAction(null)
+    },
+    [pendingAction],
+  )
+
+  const logout = useCallback(async () => {
+    try {
+      await apiFetch<null>(STORAGE_KEY, '/api/auth/logout', { method: 'POST' })
+    } catch {
+      // ignore
+    }
+    setUser(null)
+    persist(null)
   }, [])
 
   const requireAuth = useCallback(
@@ -126,18 +181,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       isAuthenticated: !!user,
-      isMember: !!user?.member,
       authOpen,
       authMode,
       openAuth,
       closeAuth,
+      sendSms,
       login,
-      register,
       logout,
-      upgradeMember,
       requireAuth,
     }),
-    [user, authOpen, authMode, openAuth, closeAuth, login, register, logout, upgradeMember, requireAuth],
+    [user, authOpen, authMode, openAuth, closeAuth, sendSms, login, logout, requireAuth],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

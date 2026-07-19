@@ -3,13 +3,14 @@ import { useAuth } from '@/lib/auth'
 import { useLang } from '@/lib/i18n'
 
 export function AuthModal() {
-  const { authOpen, authMode, closeAuth, login, register, openAuth } = useAuth()
+  const { authOpen, closeAuth, login, sendSms } = useAuth()
   const { t } = useLang()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [phone, setPhone] = useState('')
+  const [smsCode, setSmsCode] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [countdown, setCountdown] = useState(0)
 
   useEffect(() => {
     if (!authOpen) return
@@ -24,17 +25,39 @@ export function AuthModal() {
     }
   }, [authOpen, closeAuth])
 
+  useEffect(() => {
+    if (countdown <= 0) return
+    const tmr = window.setTimeout(() => setCountdown((c) => c - 1), 1000)
+    return () => window.clearTimeout(tmr)
+  }, [countdown])
+
   if (!authOpen) return null
+
+  const onSendSms = async () => {
+    setError(null)
+    if (!/^1\d{10}$/.test(phone.trim())) {
+      setError(t('请输入有效的 11 位手机号', 'Enter a valid 11-digit phone'))
+      return
+    }
+    setSending(true)
+    try {
+      await sendSms(phone.trim())
+      setCountdown(60)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t('验证码发送失败', 'Failed to send code'))
+    } finally {
+      setSending(false)
+    }
+  }
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
     setBusy(true)
     try {
-      if (authMode === 'login') await login(email, password)
-      else await register(name, email, password)
-    } catch {
-      setError(t('操作失败，请重试', 'Something went wrong, please retry'))
+      await login(phone.trim(), smsCode.trim())
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('操作失败，请重试', 'Something went wrong, please retry'))
     } finally {
       setBusy(false)
     }
@@ -44,40 +67,51 @@ export function AuthModal() {
     <div className="auth-overlay" onClick={closeAuth}>
       <div className="auth-panel" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         <div className="auth-head">
-          <h2>{authMode === 'login' ? t('登录', 'Login') : t('注册', 'Register')}</h2>
+          <h2>{t('登录', 'Login')}</h2>
           <button className="auth-close" onClick={closeAuth} aria-label="close">
             ×
           </button>
         </div>
         <p className="auth-hint">
-          {t('演示用途，任意邮箱密码均可通过。', 'Demo only — any email and password works.')}
+          {t('手机号验证码登录，未注册将自动开户。本地 mock 验证码 123456。', 'Phone + SMS login. Mock code: 123456.')}
         </p>
         <form className="auth-form" onSubmit={submit}>
-          {authMode === 'register' && (
-            <label className="field">
-              <span>{t('昵称', 'Name')}</span>
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('怎么称呼你', 'Your name')} />
-            </label>
-          )}
           <label className="field">
-            <span>{t('邮箱', 'Email')}</span>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" />
+            <span>{t('手机号', 'Phone')}</span>
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              placeholder="11 位手机号"
+            />
           </label>
           <label className="field">
-            <span>{t('密码', 'Password')}</span>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder={t('任意密码', 'Any password')} />
+            <span>{t('验证码', 'Code')}</span>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input
+                value={smsCode}
+                onChange={(e) => setSmsCode(e.target.value)}
+                required
+                placeholder={t('短信验证码', 'SMS code')}
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                className="btn"
+                disabled={sending || countdown > 0}
+                onClick={onSendSms}
+              >
+                {countdown > 0 ? `${countdown}s` : sending ? t('发送中…', 'Sending…') : t('获取验证码', 'Get code')}
+              </button>
+            </div>
           </label>
           {error && <p className="auth-error">{error}</p>}
           <button className="btn btn-primary btn-block" type="submit" disabled={busy}>
-            {busy ? t('处理中…', 'Working…') : authMode === 'login' ? t('登录', 'Login') : t('注册', 'Register')}
+            {busy ? t('处理中…', 'Working…') : t('登录', 'Login')}
           </button>
         </form>
-        <p className="auth-switch">
-          {authMode === 'login' ? t('还没有账号？', 'No account yet?') : t('已有账号？', 'Already registered?')}
-          <button onClick={() => openAuth(authMode === 'login' ? 'register' : 'login')}>
-            {authMode === 'login' ? t('去注册', 'Sign up') : t('去登录', 'Sign in')}
-          </button>
-        </p>
       </div>
     </div>
   )
