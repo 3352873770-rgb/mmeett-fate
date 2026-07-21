@@ -164,7 +164,7 @@ export function DailyCardGame() {
 
             <p className="daily-share-tip">先做：{card.yi.slice(0, 2).join('、')}。</p>
             <footer>
-              <span>算了么</span>
+              <span>MMEETT Fate</span>
               <small>传统文化体验参考</small>
             </footer>
           </article>

@@ -10,7 +10,7 @@ export function AboutPage() {
   return (
     <div className="page">
       <span className="en-label">ABOUT</span>
-      <h1 style={{ fontSize: 'clamp(1.9rem, 5vw, 2.8rem)', margin: '0.5rem 0 1rem' }}>关于算了么</h1>
+      <h1 style={{ fontSize: 'clamp(1.9rem, 5vw, 2.8rem)', margin: '0.5rem 0 1rem' }}>关于 MMEETT Fate</h1>
 
       <h2 style={{ fontSize: '1.2rem' }}>可核对盘面，也可继续解读</h2>
       <p className="soft" style={{ maxWidth: '46rem', lineHeight: 1.9, marginTop: '0.75rem' }}>
@@ -19,7 +19,7 @@ export function AboutPage() {
 
       <h2 style={{ fontSize: '1.2rem', marginTop: '2rem' }}>产品介绍</h2>
       <p className="soft" style={{ maxWidth: '46rem', lineHeight: 1.9, marginTop: '0.75rem' }}>
-        「算了么」是一套面向普通用户的东方命理排盘工具。八字、紫微、奇门、黄历等盘面由历法与排盘引擎生成；解读结合既有盘面、真太阳时和你的问题继续解释。
+        「MMEETT Fate」是一套面向普通用户的东方命理排盘工具。八字、紫微、奇门、黄历等盘面由历法与排盘引擎生成；解读结合既有盘面、真太阳时和你的问题继续解释。
       </p>
 
       <h2 style={{ fontSize: '1.2rem', marginTop: '2rem' }}>三条原则</h2>

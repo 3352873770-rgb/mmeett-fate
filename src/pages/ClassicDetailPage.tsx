@@ -6,7 +6,7 @@ const SECTIONS = [
   { id: 'quotes', label: '精简摘读' },
   { id: 'toc', label: '阅读目录' },
   { id: 'viewable', label: '可查看内容' },
-  { id: 'usage', label: '怎么用于算了么' },
+  { id: 'usage', label: '怎么用于 MMEETT Fate' },
   { id: 'boundary', label: '阅读边界' },
 ] as const
 
@@ -149,7 +149,7 @@ export function ClassicDetailPage() {
           </section>
 
           <section id="usage" className="classics-block">
-            <h3>05 怎么用于算了么</h3>
+            <h3>05 怎么用于 MMEETT Fate</h3>
             <p className="soft">
               本站会把这类书目作为术语和解释口径的参考：基础排盘仍由确定性历法和算法生成，解读只结合当前盘面、问题和已整理规则做说明。
             </p>

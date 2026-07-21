@@ -11,7 +11,7 @@ export function SiteFooter() {
         <div>
           <div className="brand" style={{ marginBottom: '0.6rem' }}>
             <BrandMark />
-            <span className="brand-text">算了么</span>
+            <span className="brand-text">MMEETT Fate</span>
           </div>
           <p className="footer-copy" style={{ maxWidth: '24rem', lineHeight: 1.7 }}>
             {t(

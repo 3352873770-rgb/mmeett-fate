@@ -94,7 +94,7 @@ export function TarotDrawGame() {
           <article className="tarot-share-card">
             <header>
               <span>{name.trim() || '来问的人'} · {spread.count} 张牌</span>
-              <strong>算了么</strong>
+              <strong>MMEETT Fate</strong>
             </header>
             <p className="tarot-share-type">{spread.zh}推演</p>
             <p className="tarot-share-q">{question.trim() || '（未填写问题）'}</p>
@@ -147,7 +147,7 @@ export function TarotDrawGame() {
               </div>
             )}
 
-            <footer>传统文化体验参考 · 算了么</footer>
+            <footer>传统文化体验参考 · MMEETT Fate</footer>
           </article>
         </div>
       </div>

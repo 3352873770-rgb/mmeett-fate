@@ -2,7 +2,7 @@
 export function BrandMark({ className = '' }: { className?: string }) {
   return (
     <span className={`brand-mark ${className}`.trim()} aria-hidden>
-      <svg viewBox="0 0 64 64" role="img" aria-label="算了么">
+      <svg viewBox="0 0 64 64" role="img" aria-label="MMEETT Fate">
         <circle cx="32" cy="32" r="30" fill="currentColor" opacity="0.12" />
         <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" strokeWidth="2.4" opacity="0.72" />
         <path

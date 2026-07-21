@@ -134,9 +134,9 @@ export function SiteHeader() {
     <>
       <header className="site-header">
         <div className="header-inner">
-          <Link to="/" className="brand" onClick={() => setMenuOpen(false)} aria-label={t('算了么首页', 'Suan Le Me home')}>
+          <Link to="/" className="brand" onClick={() => setMenuOpen(false)} aria-label={t('MMEETT Fate 首页', 'MMEETT Fate home')}>
             <BrandMark />
-            <span className="brand-text">算了么</span>
+            <span className="brand-text">MMEETT Fate</span>
           </Link>
           <nav className="nav-inline">
             {navItems.map((n) => (
@@ -175,7 +175,7 @@ export function SiteHeader() {
           <div className="menu-top">
             <Link to="/" className="brand" onClick={() => setMenuOpen(false)}>
               <BrandMark />
-              <span className="brand-text">算了么</span>
+              <span className="brand-text">MMEETT Fate</span>
             </Link>
             <span className="header-spacer" />
             <button type="button" className="icon-btn" onClick={() => setMenuOpen(false)} aria-label="close">

@@ -165,7 +165,7 @@ export function RedThreadGame() {
           <article className={`red-share-card${done ? ' ready' : ''}`}>
             <header>
               <span>红线合拍 · 关系小游戏</span>
-              <strong>算了么</strong>
+              <strong>MMEETT Fate</strong>
             </header>
 
             <div className="red-orbit" aria-hidden>

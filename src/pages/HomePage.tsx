@@ -134,8 +134,8 @@ export function HomePage() {
           <span className="hero-tag">
             {t('东方命理，云海问卦', 'Eastern divination · cloud sea oracle')}
           </span>
-          <h1 className="hero-title">算了么</h1>
-          <p className="hero-sub">SUAN LE ME</p>
+          <h1 className="hero-title">MMEETT Fate</h1>
+          <p className="hero-sub">MMEETT FATE</p>
           <p className="hero-desc">
             {t('天地之间，万事皆有迹可循。', 'Between heaven and earth, every pattern leaves a trace.')}
             <br />
@@ -159,7 +159,7 @@ export function HomePage() {
         <div className="container">
           <div className="home-split">
             <div className="home-intro">
-              <span className="en-label home-dark-label">{t('云海问卦', 'Suan Le Me')}</span>
+              <span className="en-label home-dark-label">{t('云海问卦', 'MMEETT Fate')}</span>
               <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>
                 {t('一屏入局，诸术同参。', 'One field, many ways to read the pattern.')}
               </h2>

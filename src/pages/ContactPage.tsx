@@ -37,7 +37,7 @@ export function ContactPage() {
           <h3>其他方式</h3>
           <p className="soft" style={{ marginTop: '0.75rem', lineHeight: 1.9 }}>
             邮箱：hello@suanlemeai.cn<br />
-            公众号：算了么<br />
+            公众号：MMEETT Fate<br />
             工作时间：周一至周五 10:00–18:00
           </p>
           <p className="muted" style={{ fontSize: '0.78rem', marginTop: '1rem' }}>以上联系方式为演示占位。</p>
