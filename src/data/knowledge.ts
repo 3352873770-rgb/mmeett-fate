@@ -1,4 +1,4 @@
-// 知识图解：对齐 suanlemeai.cn/knowledge 的 10 张结构图（中英双语）
+// 知识图解：10 张结构图（中英双语）
 
 export type DiagramCatId = 'basics' | 'chart' | 'divination' | 'time' | 'liuren' | 'star'
 

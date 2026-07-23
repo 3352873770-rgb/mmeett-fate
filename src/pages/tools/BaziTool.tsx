@@ -47,7 +47,7 @@ type Meta = {
   placeLabel?: string
 }
 
-/** 独立页面（表单 + 结果），对齐 suanlemeai.cn/tools/bazi */
+/** 独立页面（表单 + 结果） */
 export function BaziTool() {
   const { has, toggle } = useFavorites()
   const [name, setName] = useState('')

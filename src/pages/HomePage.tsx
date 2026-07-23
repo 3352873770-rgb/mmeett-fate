@@ -129,7 +129,7 @@ export function HomePage() {
   return (
     <div>
       <section className="hero">
-        <div className="hero-bg" style={{ backgroundImage: 'url(/home/suanleme-cloud-scroll.jpg)' }} aria-hidden />
+        <div className="hero-bg" style={{ backgroundImage: 'url(/home/mmeett-fate-cloud-scroll.jpg)' }} aria-hidden />
         <div className="hero-inner">
           <span className="hero-tag">
             {t('东方命理，云海问卦', 'Eastern divination · cloud sea oracle')}

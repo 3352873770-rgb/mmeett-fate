@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const PUBLIC = join(__dirname, '..', 'public')
-const BASE = 'https://suanlemeai.cn'
+const BASE = 'https://suanlemeai.cn' // 素材来源参考站（仅下载脚本使用）
 
 const assets = [
   'home/suanleme-cloud-scroll.jpg',
@@ -15,10 +15,17 @@ const assets = [
   'relationship/relationship-mirror-morning-fast.webp',
 ]
 
+/** 下载后落盘到本站命名 */
+const renameMap = {
+  'home/suanleme-cloud-scroll.jpg': 'home/mmeett-fate-cloud-scroll.jpg',
+  'home/suanleme-day-mystic-hero.jpg': 'home/mmeett-fate-day-mystic-hero.jpg',
+}
+
 async function run() {
   for (const rel of assets) {
     const url = `${BASE}/${rel}`
-    const dest = join(PUBLIC, rel)
+    const outRel = renameMap[rel] ?? rel
+    const dest = join(PUBLIC, outRel)
     try {
       const res = await fetch(url)
       if (!res.ok) {
@@ -28,7 +35,7 @@ async function run() {
       const buf = Buffer.from(await res.arrayBuffer())
       await mkdir(dirname(dest), { recursive: true })
       await writeFile(dest, buf)
-      console.log(`[ok] ${rel} (${(buf.length / 1024).toFixed(0)} KB)`)
+      console.log(`[ok] ${outRel} (${(buf.length / 1024).toFixed(0)} KB)`)
     } catch (err) {
       console.warn(`[fail] ${rel} -> ${err.message}`)
     }

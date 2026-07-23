@@ -9,7 +9,7 @@ import {
 
 export type Lang = 'zh' | 'en'
 
-const STORAGE_KEY = '__suanleme_lang__'
+const STORAGE_KEY = '__mmeett_fate_lang__'
 
 type LangContextValue = {
   lang: Lang

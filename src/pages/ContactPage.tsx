@@ -36,7 +36,7 @@ export function ContactPage() {
         <div className="card">
           <h3>其他方式</h3>
           <p className="soft" style={{ marginTop: '0.75rem', lineHeight: 1.9 }}>
-            邮箱：hello@suanlemeai.cn<br />
+            邮箱：hello@mmeett.com<br />
             公众号：MMEETT Fate<br />
             工作时间：周一至周五 10:00–18:00
           </p>

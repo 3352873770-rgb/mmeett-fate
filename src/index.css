@@ -894,7 +894,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
 }
 .wiki-item:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ============ 八字排盘页（对齐 suanlemeai.cn/tools/bazi） ============ */
+/* ============ 八字排盘页 ============ */
 .tool-detail-bazi {
   position: relative;
 }
@@ -1213,7 +1213,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
   .loc-grid { grid-template-columns: 1fr; max-height: 260px; }
 }
 
-/* ============ 知识图解页（对齐 suanlemeai.cn/knowledge） ============ */
+/* ============ 知识图解页 ============ */
 .knowledge-page {
   position: relative;
 }

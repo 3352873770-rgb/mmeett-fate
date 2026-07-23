@@ -50,7 +50,7 @@ export function ToolsPage() {
     <div className="page">
       {/* 顶栏横幅 */}
       <section className="tools-hero">
-        <div className="tools-hero-bg" style={{ backgroundImage: 'url(/home/suanleme-day-mystic-hero.jpg)' }} aria-hidden />
+        <div className="tools-hero-bg" style={{ backgroundImage: 'url(/home/mmeett-fate-day-mystic-hero.jpg)' }} aria-hidden />
         <div className="tools-hero-body">
           <span className="en-label" style={{ color: 'rgba(255,250,234,0.7)' }}>云海问卦 · 推演云台</span>
           <h1>一屏选局，备好再推演</h1>

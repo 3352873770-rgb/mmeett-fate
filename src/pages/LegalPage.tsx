@@ -29,7 +29,7 @@ export function LegalPage({ kind }: { kind: 'disclaimer' | 'privacy' }) {
         <p key={i} className="soft" style={{ lineHeight: 1.9, marginBottom: '1rem' }}>{p}</p>
       ))}
       <p className="muted" style={{ fontSize: '0.8rem', marginTop: '2rem' }}>
-        最后更新：2026 年 · Copyright © 2026 suanlemeai.cn
+        最后更新：2026 年 · Copyright © 2026 MMEETT Fate
       </p>
     </div>
   )

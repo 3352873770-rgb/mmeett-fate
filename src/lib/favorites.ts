@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-const STORAGE_KEY = '__suanleme_favorites__'
+const STORAGE_KEY = '__mmeett_fate_favorites__'
 
 function load(): string[] {
   try {

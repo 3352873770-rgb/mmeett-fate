@@ -16,7 +16,7 @@ const HINTS = [
   '摇到上上签，当天赠送 1 次全能解读',
 ]
 
-const LOTTERY_STORE = '__suanleme_daily_lottery__'
+const LOTTERY_STORE = '__mmeett_fate_daily_lottery__'
 
 export function DailyLotteryGame() {
   const { isAuthenticated, openAuth, user } = useAuth()

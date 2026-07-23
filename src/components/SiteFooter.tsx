@@ -29,7 +29,7 @@ export function SiteFooter() {
             ))}
           </div>
           <p className="footer-copy" style={{ marginTop: '1.5rem' }}>
-            Copyright © 2026 suanlemeai.cn. All rights reserved.
+            Copyright © 2026 MMEETT Fate. All rights reserved.
           </p>
         </div>
       </div>

@@ -8,7 +8,7 @@ import {
 
 export type Skin = 'day' | 'cloud' | 'night'
 
-const STORAGE_KEY = '__suanleme_skin__'
+const STORAGE_KEY = '__mmeett_fate_skin__'
 
 const ThemeContext = createContext<{ skin: Skin; setSkin: (s: Skin) => void } | null>(null)
 

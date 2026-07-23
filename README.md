@@ -1,11 +1,11 @@
-# 算了么 · suanleme（suanlemeai.cn 像素级复刻）
+# MMEETT Fate（cesuan-web）
 
-东方命理推演云台的纯前端复刻。Vite + React 19 + TypeScript + React Router，无后端，假数据 + localStorage。
+东方命理推演云台前端。Vite + React 19 + TypeScript + React Router，无后端，假数据 + localStorage。
 
 ## 启动
 
 ```bash
-cd sites/suanleme
+cd frontend/cesuan-web
 npm run dev      # http://localhost:5176
 npm run build    # tsc + vite build
 npm run lint     # oxlint
@@ -36,7 +36,7 @@ scripts/download-assets.mjs   # 下载参考站云海图到 public/
 
 ## 青囊融入（去重）
 
-从 [qingnang.cc](https://www.qingnang.cc/) 并入**独有**能力；与算了么已有重叠的排盘工具不重复造：
+从 [qingnang.cc](https://www.qingnang.cc/) 并入**独有**能力；与本站已有重叠的排盘工具不重复造：
 
 | 新增 | 路径 |
 |------|------|
