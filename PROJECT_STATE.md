@@ -1,6 +1,6 @@
 # MMEETT Fate 项目状态
 
-更新日期：2026-07-24
+更新日期：2026-07-25
 
 ## 当前基线
 
@@ -60,6 +60,13 @@
 - `src/brand-lockup.jsx` 负责 MMEETT Fate 的共享英文品牌字标、说明与默认页面标题。
 - `public/legacy/legacy-app.js` 与 `legacy-styles.css` 提供下半页兼容内容。
 - `src/App.jsx` 与 `src/main.jsx` 当前不由 `index.html` 加载，保留为后续 Legacy 源码迁移参考，不应被误认为线上入口。
+
+## 并行规划：股市项目一级界面
+
+- 已基于 `http://stockchart.mmeett.studio/#workflow` 完成一级信息架构分析。
+- 已建立股市基础知识、一级首页 PRD、功能地图和教育优先的产品边界，关联 Issue #58。
+- 当前只有文档规划，不修改 MMEETT Fate 现役页面，不实现股市前端或二级详情。
+- 后续进入设计前需先确认最终品牌、行情数据授权与首个教学图表示例。
 
 ## 已知问题
 
