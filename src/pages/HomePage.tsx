@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Link } from 'react-router-dom'
 import { HexLines } from '@/components/HexLines'
 import { classics } from '@/data/classics'
 import { dailyHexagram } from '@/lib/liuyao'
@@ -11,32 +10,32 @@ import { publicAsset } from '@/lib/publicAsset'
 
 const hotTools = [
   {
-    to: '/tools/bazi',
     image: publicAsset('/home/tools/bazi.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/bazi-mobile.webp'),
     zh: '八字排盘',
     en: 'BaZi Chart',
     introZh: '看见先天结构',
     introEn: 'Read your underlying structure',
   },
   {
-    to: '/tools/ziwei',
     image: publicAsset('/home/tools/ziwei.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/ziwei-mobile.webp'),
     zh: '紫微斗数',
     en: 'Zi Wei Dou Shu',
     introZh: '读懂人生宫位',
     introEn: 'Understand the twelve palaces',
   },
   {
-    to: '/tools/liuyao',
     image: publicAsset('/home/tools/liuyao.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/liuyao-mobile.webp'),
     zh: '六爻问卦',
     en: 'Liu Yao',
     introZh: '回应当下疑问',
     introEn: 'Ask one question about now',
   },
   {
-    to: '/tools/tarot',
     image: publicAsset('/home/tools/tarot.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/tarot-mobile.webp'),
     zh: '塔罗牌阵',
     en: 'Tarot',
     introZh: '照见此刻心境',
@@ -53,12 +52,21 @@ const classicImages: Record<string, string> = {
   huangjince: publicAsset('/home/classics/huangjince.jpg'),
 }
 
+const classicMobileImages: Record<string, string> = {
+  zhouyi: publicAsset('/home/optimized/classics/zhouyi-mobile.webp'),
+  yizhuan: publicAsset('/home/optimized/classics/yizhuan-mobile.webp'),
+  meihua: publicAsset('/home/optimized/classics/meihua-mobile.webp'),
+  zengshan: publicAsset('/home/optimized/classics/zengshan-mobile.webp'),
+  bushizhengzong: publicAsset('/home/optimized/classics/bushizhengzong-mobile.webp'),
+  huangjince: publicAsset('/home/optimized/classics/huangjince-mobile.webp'),
+}
+
 const intentOptions = [
-  { to: '/personality', zh: '我想看自己', en: 'Understand myself' },
-  { to: '/relationship-lab', zh: '我想看关系', en: 'Read a relationship' },
-  { to: '/tools/liuyao', zh: '我想问当下', en: 'Ask about now' },
-  { to: '/tools/zeri', zh: '我想查日子', en: 'Check a date' },
-  { to: '/knowledge', zh: '我想学知识', en: 'Learn the system' },
+  { zh: '我想看自己', en: 'Understand myself' },
+  { zh: '我想看关系', en: 'Read a relationship' },
+  { zh: '我想问当下', en: 'Ask about now' },
+  { zh: '我想查日子', en: 'Check a date' },
+  { zh: '我想学知识', en: 'Learn the system' },
 ]
 
 const trustItems = [
@@ -295,7 +303,19 @@ export function HomePage() {
   return (
     <div className="fate-home" ref={homeRef}>
       <section className="hero">
-        <div className="hero-bg" style={{ backgroundImage: `url(${publicAsset('/home/mmeett-fate-path-light.png')})` }} aria-hidden />
+        <div className="hero-bg" aria-hidden>
+          <picture>
+            <source media="(max-width: 640px)" srcSet={publicAsset('/home/optimized/hero-mobile.webp')} type="image/webp" />
+            <img
+              src={publicAsset('/home/optimized/hero-desktop.webp')}
+              alt=""
+              width="1920"
+              height="820"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
+        </div>
         <div className="hero-inner">
           <h1 className="hero-title">{t('不问注定，只问此刻该怎么走。', 'Not fate, but the next right move.')}</h1>
           <p className="hero-sub">MMEETT FATE</p>
@@ -306,9 +326,9 @@ export function HomePage() {
             )}
           </p>
           <div className="hero-actions">
-            <Link className="btn btn-primary" to="/tools">
+            <a className="btn btn-primary" href="#daily">
               ▶ {t('Start', 'Start')}
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -357,9 +377,9 @@ export function HomePage() {
               <span className="is-warn">{t('独断', 'Go alone')}</span>
               <span className="is-warn">{t('拖延', 'Delay')}</span>
             </div>
-            <Link className="fate-gold-button" to="/tools/daily-hexagram">
+            <span className="fate-gold-button" aria-disabled="true">
               {t('卦辞解读', 'Read the hexagram')}
-            </Link>
+            </span>
           </div>
         ) : null}
       </section>
@@ -375,10 +395,13 @@ export function HomePage() {
           <div className="fate-classics-viewport">
             <div className="fate-classics-track" ref={classicTrackRef}>
               {classics.slice(0, 6).map((book) => (
-                <Link className="fate-classic-card" to={`/classics/${encodeURIComponent(book.title)}`} key={book.id}>
+                <article className="fate-classic-card" tabIndex={0} key={book.id}>
                   <div className="fate-classic-inner">
                     <div className="fate-classic-face fate-classic-front">
-                      <img src={classicImages[book.id]} alt="" loading="lazy" decoding="async" />
+                      <picture>
+                        <source media="(max-width: 640px)" srcSet={classicMobileImages[book.id]} type="image/webp" />
+                        <img src={classicImages[book.id]} alt="" loading="lazy" decoding="async" width="700" height="1080" />
+                      </picture>
                       <div className="fate-classic-meta">
                         <h3>{book.title}</h3>
                         <p>{book.dynasty} · {book.author}</p>
@@ -395,7 +418,7 @@ export function HomePage() {
                       <strong>{t('去古籍书楼读 →', 'Read in the library →')}</strong>
                     </div>
                   </div>
-                </Link>
+                </article>
               ))}
             </div>
           </div>
@@ -410,18 +433,21 @@ export function HomePage() {
         </header>
         <div className="fate-tool-showcase">
           {hotTools.map((tool) => (
-            <Link className="fate-tool-entry" to={tool.to} key={tool.to}>
+            <article className="fate-tool-entry" key={tool.zh}>
               <div className="fate-tool-visual">
-                <img src={tool.image} alt="" loading="lazy" decoding="async" />
+                <picture>
+                  <source media="(max-width: 640px)" srcSet={tool.mobileImage} type="image/webp" />
+                  <img src={tool.image} alt="" loading="lazy" decoding="async" width="780" height="1040" />
+                </picture>
               </div>
               <div className="fate-tool-copy">
                 <h3>{lang === 'en' ? tool.en : tool.zh}</h3>
                 <p>{lang === 'en' ? tool.introEn : tool.introZh}</p>
               </div>
-            </Link>
+            </article>
           ))}
         </div>
-        <Link className="fate-outline-button" data-reveal to="/tools">{t('更多工具', 'More tools')}</Link>
+        <span className="fate-outline-button" data-reveal aria-disabled="true">{t('更多工具', 'More tools')}</span>
       </section>
 
       <div className="fate-marquee" aria-hidden="true">
@@ -436,10 +462,10 @@ export function HomePage() {
           <h2 data-reveal>{t('问题', 'Questions')}</h2>
           <div className="fate-question-list">
             {intentOptions.map((option) => (
-              <Link to={option.to} key={option.to} className="fate-question-row" data-reveal>
+              <div key={option.zh} className="fate-question-row" data-reveal>
                 <span className="fate-question-text">{lang === 'en' ? option.en : option.zh}</span>
                 <span aria-hidden>+</span>
-              </Link>
+              </div>
             ))}
           </div>
         </div>

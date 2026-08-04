@@ -90,6 +90,7 @@
 
 /* ============ 基础 ============ */
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 html, body, #root { min-height: 100%; }
 body {
   margin: 0;
@@ -384,7 +385,10 @@ body { overflow-x: clip; }
 
 /* ============ Hero ============ */
 .hero { position: relative; min-height: calc(100dvh - 64px); display: grid; place-items: center; text-align: center; overflow: hidden; }
-.hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center 54%; }
+.hero-bg { position: absolute; inset: 0; }
+.hero-bg picture,
+.hero-bg img { width: 100%; height: 100%; display: block; }
+.hero-bg img { object-fit: cover; object-position: center 54%; }
 .hero-bg::after { content: ''; position: absolute; inset: 0; background:
   radial-gradient(ellipse 54% 42% at 50% 52%, rgba(84, 77, 131, 0.24), transparent 72%),
   linear-gradient(90deg, rgba(3, 8, 12, 0.76) 0%, rgba(3, 8, 12, 0.2) 48%, rgba(3, 8, 12, 0.38) 100%),
@@ -437,7 +441,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
 
 /* ============ 页脚 ============ */
 .site-footer { border-top: 1px solid var(--border); background: var(--bg-2); }
-.footer-inner { max-width: var(--maxw); margin: 0 auto; padding: 2.5rem 1.25rem; display: grid; gap: 1.5rem; grid-template-columns: 2fr 3fr; }
+.footer-inner { max-width: var(--maxw); margin: 0 auto; padding: 2.5rem 1.25rem; display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-content: start; }
 .footer-links a { color: var(--text-soft); font-size: 0.9rem; }
 .footer-links a:hover { color: var(--accent); }
@@ -1249,7 +1253,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
   text-align: center;
   background: #101625;
 }
-.fate-classic-front > img {
+.fate-classic-front > picture,
+.fate-classic-front > picture > img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1339,6 +1344,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
 .fate-tool-entry:nth-child(even) .fate-tool-visual { transform: rotate(9deg); }
 .fate-tool-entry:hover .fate-tool-visual { transform: rotate(-3deg) translateY(-8px) scale(1.035); border-color: var(--fate-paper); }
 .fate-tool-entry:nth-child(even):hover .fate-tool-visual { transform: rotate(3deg) translateY(-8px) scale(1.035); }
+.fate-tool-visual picture,
 .fate-tool-visual img {
   width: 100%;
   height: 100%;
@@ -1481,6 +1487,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
   .fate-classics-track { padding-top: 3.75rem; }
 }
 @media (max-width: 560px) {
+  .hero-bg img { object-position: center center; }
+  .footer-inner { align-items: flex-start; flex-direction: column; }
   .fate-daily { margin-top: 0; padding-top: 8rem; }
   .fate-daily-intro { min-height: 96dvh; padding-top: 8rem; padding-bottom: 8rem; }
   .fate-daily-intro h2 { font-size: 3rem; letter-spacing: 0.12em; text-indent: 0.12em; }
