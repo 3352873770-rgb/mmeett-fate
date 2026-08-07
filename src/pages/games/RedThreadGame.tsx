@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { seedFrom } from '@/data/games'
+import { publicAsset } from '@/lib/publicAsset'
 
 type Gender = '女' | '男' | '保密'
 
@@ -110,7 +111,7 @@ export function RedThreadGame() {
   return (
     <div className="game-detail">
       <section className="game-hero">
-        <div className="game-hero-bg" style={{ backgroundImage: 'url(/games/cloud-paper-mist.jpg)' }} aria-hidden />
+        <div className="game-hero-bg" style={{ backgroundImage: `url(${publicAsset('/games/cloud-paper-mist.jpg')})` }} aria-hidden />
         <div className="game-hero-body">
           <span className="badge" style={{ background: 'color-mix(in srgb, #9b3d45 18%, transparent)', color: '#8a3038' }}>红线合拍</span>
           <h1>看两个人的红线牵引感</h1>

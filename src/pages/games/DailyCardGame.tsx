@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { seedFrom, todayKey } from '@/data/games'
+import { publicAsset } from '@/lib/publicAsset'
 
 const KEYWORDS = ['开局', '沉静', '果断', '柔和', '专注', '开阔', '收敛', '回暖', '守成', '破局']
 const COLORS = [
@@ -69,7 +70,7 @@ export function DailyCardGame() {
   return (
     <div className="game-detail">
       <section className="game-hero">
-        <div className="game-hero-bg" style={{ backgroundImage: 'url(/games/cloud-paper-mist.jpg)' }} aria-hidden />
+        <div className="game-hero-bg" style={{ backgroundImage: `url(${publicAsset('/games/cloud-paper-mist.jpg')})` }} aria-hidden />
         <div className="game-hero-body">
           <span className="badge">每日命理卡</span>
           <h1>把今天做成一张能分享的命理卡</h1>

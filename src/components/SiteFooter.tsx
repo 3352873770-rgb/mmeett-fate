@@ -1,10 +1,8 @@
-import { Link } from 'react-router-dom'
 import { BrandMark } from '@/components/BrandMark'
-import { footerLinks } from '@/data/nav'
 import { useLang } from '@/lib/i18n'
 
 export function SiteFooter() {
-  const { lang, t } = useLang()
+  const { t } = useLang()
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -20,18 +18,7 @@ export function SiteFooter() {
             )}
           </p>
         </div>
-        <div>
-          <div className="footer-links">
-            {footerLinks.map((l) => (
-              <Link key={l.to} to={l.to}>
-                {lang === 'zh' ? l.zh : l.en}
-              </Link>
-            ))}
-          </div>
-          <p className="footer-copy" style={{ marginTop: '1.5rem' }}>
-            Copyright © 2026 MMEETT Fate. All rights reserved.
-          </p>
-        </div>
+        <p className="footer-copy">Copyright © 2026 MMEETT Fate. All rights reserved.</p>
       </div>
     </footer>
   )

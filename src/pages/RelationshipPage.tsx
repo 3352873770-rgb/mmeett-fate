@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MemberLock } from '@/components/MemberLock'
+import { publicAsset } from '@/lib/publicAsset'
 
 const relations = ['暧昧', '恋爱', '伴侣', '婚姻', '前任', '朋友', '家庭', '职场', '其他']
 const scenes = ['回复变慢', '冲突之后', '计划改变', '边界问题', '冷热反复', '要不要继续', '其他场景']
@@ -25,7 +26,7 @@ export function RelationshipPage() {
   return (
     <div>
       <section className="hero" style={{ minHeight: '42vh' }}>
-        <div className="hero-bg" style={{ backgroundImage: 'url(/relationship/relationship-mirror-morning-fast.webp)' }} aria-hidden />
+        <div className="hero-bg" style={{ backgroundImage: `url(${publicAsset('/relationship/relationship-mirror-morning-fast.webp')})` }} aria-hidden />
         <div className="hero-inner">
           <span className="en-label" style={{ color: 'var(--hero-text)' }}>RELATIONSHIP LAB</span>
           <h1 className="hero-title" style={{ fontSize: 'clamp(1.9rem, 5vw, 3.4rem)' }}>关系实验室</h1>

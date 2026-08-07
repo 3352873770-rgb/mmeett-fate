@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { MemberLock } from '@/components/MemberLock'
+import { publicAsset } from '@/lib/publicAsset'
 
 type Dim = 'EI' | 'SN' | 'TF' | 'JP'
 type Q = { dim: Dim; a: string; b: string; aKey: string; bKey: string }
@@ -49,7 +50,7 @@ export function PersonalityPage() {
     <div>
       {/* Hero */}
       <section className="hero" style={{ minHeight: '46vh' }}>
-        <div className="hero-bg" style={{ backgroundImage: 'url(/personality/moonlit-editorial-desk.jpg)' }} aria-hidden />
+        <div className="hero-bg" style={{ backgroundImage: `url(${publicAsset('/personality/moonlit-editorial-desk.jpg')})` }} aria-hidden />
         <div className="hero-inner">
           <span className="en-label" style={{ color: 'var(--hero-text)' }}>PERSONALITY ATLAS</span>
           <h1 className="hero-title" style={{ fontSize: 'clamp(1.8rem, 5vw, 3.2rem)' }}>不是贴标签，是看见自己的反应方式</h1>

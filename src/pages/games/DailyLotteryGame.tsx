@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/lib/auth'
 import { seedFrom, todayKey } from '@/data/games'
+import { publicAsset } from '@/lib/publicAsset'
 
 const LEVELS = ['上上签', '上签', '中签', '下签'] as const
 const VERSES = [
@@ -68,12 +69,12 @@ export function DailyLotteryGame() {
           <div className={`lottery-stage${shaking ? ' is-shaking' : ''}${drawn ? ' is-drawn' : ''}`}>
             <img
               className="lottery-cup"
-              src="/games/daily-lottery-premium-cup-fast.webp"
+              src={publicAsset('/games/daily-lottery-premium-cup-fast.webp')}
               alt="签筒"
             />
             <img
               className={`lottery-sticks${drawn ? ' out' : ''}`}
-              src={drawn ? '/games/daily-lottery-premium-stick-fast.webp' : '/games/daily-lottery-premium-stick-bundle-fast.webp'}
+              src={publicAsset(drawn ? '/games/daily-lottery-premium-stick-fast.webp' : '/games/daily-lottery-premium-stick-bundle-fast.webp')}
               alt=""
               aria-hidden
             />

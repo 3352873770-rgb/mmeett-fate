@@ -1,444 +1,445 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { HexLines } from '@/components/HexLines'
-import { KnowledgeDiagram } from '@/components/KnowledgeDiagram'
-import { diagrams } from '@/data/knowledge'
-import { tools } from '@/data/tools'
+import { classics } from '@/data/classics'
 import { dailyHexagram } from '@/lib/liuyao'
 import { useLang } from '@/lib/i18n'
+import { publicAsset } from '@/lib/publicAsset'
 
 const hotTools = [
   {
-    to: '/tools/hecan',
-    ico: '☰',
-    zh: '三术合参',
-    en: 'Triple Reading',
-    subZh: '八字 · 紫微 · 奇门互证',
-    subEn: 'Bazi, Zi Wei and Qimen together',
+    image: publicAsset('/home/tools/bazi.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/bazi-mobile.webp'),
+    zh: '八字排盘',
+    en: 'BaZi Chart',
+    introZh: '看见先天结构',
+    introEn: 'Read your underlying structure',
   },
   {
-    to: '/tools/bazi-hepan',
-    ico: '⚭',
-    zh: '八字合盘',
-    en: 'Bazi Compatibility',
-    subZh: '双人四柱对照合缘',
-    subEn: 'Two charts for relationship reading',
+    image: publicAsset('/home/tools/ziwei.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/ziwei-mobile.webp'),
+    zh: '紫微斗数',
+    en: 'Zi Wei Dou Shu',
+    introZh: '读懂人生宫位',
+    introEn: 'Understand the twelve palaces',
   },
   {
-    to: '/tools/bazi-detail',
-    ico: '▤',
-    zh: '八字详批',
-    en: 'Bazi Detail',
-    subZh: '古籍锚点逐柱参详',
-    subEn: 'Classic-anchored pillar reading',
+    image: publicAsset('/home/tools/liuyao.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/liuyao-mobile.webp'),
+    zh: '六爻问卦',
+    en: 'Liu Yao',
+    introZh: '回应当下疑问',
+    introEn: 'Ask one question about now',
   },
   {
-    to: '/tools/ziwei-hepan',
-    ico: '✦',
-    zh: '紫微合盘',
-    en: 'Zi Wei Compatibility',
-    subZh: '十二宫对映合缘',
-    subEn: 'Palace mapping for two charts',
-  },
-  {
-    to: '/tools/liuyao',
-    ico: '☯',
-    zh: '六爻起卦',
-    en: 'Liu Yao Cast',
-    subZh: '铜钱法成卦',
-    subEn: 'Coin-method casting',
-  },
-  {
-    to: '/tools/daliuren',
-    ico: '☵',
-    zh: '大六壬',
-    en: 'Da Liu Ren',
-    subZh: '月将 · 四课三传',
-    subEn: 'Month general and transmissions',
-  },
-  {
-    to: '/wiki',
-    ico: '◈',
-    zh: '藏经阁',
-    en: 'Wiki',
-    subZh: '术数词条坐标系',
-    subEn: 'Term index for metaphysics',
-  },
-  {
-    to: '/classics',
-    ico: '▣',
-    zh: '古籍书楼',
-    en: 'Classics',
-    subZh: '原典索引',
-    subEn: 'Source text index',
+    image: publicAsset('/home/tools/tarot.jpg'),
+    mobileImage: publicAsset('/home/optimized/tools/tarot-mobile.webp'),
+    zh: '塔罗牌阵',
+    en: 'Tarot',
+    introZh: '照见此刻心境',
+    introEn: 'Reflect the present moment',
   },
 ]
 
-const gridSteps = [
-  {
-    ico: '◷',
-    titleZh: '定时',
-    titleEn: 'Time',
-    bodyZh: '先校准日期、时辰、节气和地点。时间一错，盘面后面全会偏。',
-    bodyEn: 'Confirm date, hour, solar term and location before reading the chart.',
-  },
-  {
-    ico: '☯',
-    titleZh: '取象',
-    titleEn: 'Image',
-    bodyZh: '命盘看结构，卦象看当下，牌阵看选择。先分清用哪一门，再入局。',
-    bodyEn: 'Charts, hexagrams and cards answer different kinds of questions.',
-  },
-  {
-    ico: '⚖',
-    titleZh: '断事',
-    titleEn: 'Judgement',
-    bodyZh: '只问一件事，先判强弱和阻力，再看转机，不用空话把结果抹平。',
-    bodyEn: 'Ask one thing, weigh strength and resistance first, then look for openings.',
-  },
-  {
-    ico: '✓',
-    titleZh: '复核',
-    titleEn: 'Review',
-    bodyZh: '用档案、历史记录和古籍规则反复校验；证据不足时直接标出边界。',
-    bodyEn: 'Use profiles, history and classic rules to check evidence and limits.',
-  },
-]
+const classicImages: Record<string, string> = {
+  zhouyi: publicAsset('/home/classics/zhouyi.jpg'),
+  yizhuan: publicAsset('/home/classics/yizhuan.jpg'),
+  meihua: publicAsset('/home/classics/meihua.jpg'),
+  zengshan: publicAsset('/home/classics/zengshan.jpg'),
+  bushizhengzong: publicAsset('/home/classics/bushizhengzong.jpg'),
+  huangjince: publicAsset('/home/classics/huangjince.jpg'),
+}
 
-const signs = [
-  { zh: '心有所向，行则将至。', en: 'Where the heart aims, the path will open.' },
-  { zh: '静水流深，缓则得渡。', en: 'Still water runs deep; patience finds the crossing.' },
-  { zh: '云开月明，事有转机。', en: 'When clouds part, the moon returns — so can the situation.' },
-  { zh: '守拙抱一，久则见功。', en: 'Hold to simplicity long enough, and skill appears.' },
-  { zh: '风起于青萍，慎察其微。', en: 'Wind begins in the reeds — watch the smallest shift.' },
+const classicMobileImages: Record<string, string> = {
+  zhouyi: publicAsset('/home/optimized/classics/zhouyi-mobile.webp'),
+  yizhuan: publicAsset('/home/optimized/classics/yizhuan-mobile.webp'),
+  meihua: publicAsset('/home/optimized/classics/meihua-mobile.webp'),
+  zengshan: publicAsset('/home/optimized/classics/zengshan-mobile.webp'),
+  bushizhengzong: publicAsset('/home/optimized/classics/bushizhengzong-mobile.webp'),
+  huangjince: publicAsset('/home/optimized/classics/huangjince-mobile.webp'),
+}
+
+const intentOptions = [
+  { zh: '我想看自己', en: 'Understand myself' },
+  { zh: '我想看关系', en: 'Read a relationship' },
+  { zh: '我想问当下', en: 'Ask about now' },
+  { zh: '我想查日子', en: 'Check a date' },
+  { zh: '我想学知识', en: 'Learn the system' },
 ]
 
 const WEEK_ZH = ['日', '一', '二', '三', '四', '五', '六']
 const WEEK_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+gsap.registerPlugin(useGSAP, ScrollTrigger)
+
 export function HomePage() {
   const { t, lang } = useLang()
   const daily = useMemo(() => dailyHexagram(), [])
-  const [signIdx, setSignIdx] = useState(0)
+  const [dailyOpen, setDailyOpen] = useState(false)
+  const homeRef = useRef<HTMLDivElement>(null)
+  const classicSectionRef = useRef<HTMLElement>(null)
+  const classicTrackRef = useRef<HTMLDivElement>(null)
   const today = new Date()
   const dateLabel =
     lang === 'en'
       ? `${WEEK_EN[today.getDay()]}, ${today.toLocaleString('en-US', { month: 'short' })} ${today.getDate()}, ${today.getFullYear()}`
       : `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日 星期${WEEK_ZH[today.getDay()]}`
 
+  useEffect(() => {
+    const section = classicSectionRef.current
+    const track = classicTrackRef.current
+    if (!section || !track) return
+
+    const mobile = window.matchMedia('(max-width: 940px)')
+    let frame = 0
+
+    const render = () => {
+      frame = 0
+      if (mobile.matches) {
+        section.style.removeProperty('height')
+        track.style.removeProperty('transform')
+        return
+      }
+
+      const distance = Math.max(0, track.scrollWidth - window.innerWidth)
+      section.style.height = `${window.innerHeight + distance}px`
+      const rect = section.getBoundingClientRect()
+      const travel = section.offsetHeight - window.innerHeight
+      const progress = travel > 0 ? Math.min(1, Math.max(0, -rect.top / travel)) : 0
+      track.style.transform = `translate3d(${-progress * distance}px, 0, 0)`
+    }
+
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(render)
+    }
+
+    render()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    mobile.addEventListener('change', render)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      mobile.removeEventListener('change', render)
+    }
+  }, [])
+
+  useGSAP(
+    () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+      const sections = gsap.utils.toArray<HTMLElement>('.fate-motion-section')
+      sections.forEach((section) => {
+        const revealLayers = section.querySelectorAll<HTMLElement>('[data-reveal]')
+        if (!revealLayers.length) return
+        const isDailySection = section.id === 'daily'
+
+        gsap.fromTo(
+          revealLayers,
+          { autoAlpha: 0, y: 48 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 1.05,
+            stagger: 0.13,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: isDailySection ? revealLayers[0] : section,
+              start: isDailySection ? 'top bottom' : 'top 76%',
+              once: true,
+            },
+          },
+        )
+      })
+
+      gsap.fromTo(
+        '.fate-classics-sticky',
+        {
+          y: () => Math.min(220, window.innerHeight * 0.28),
+          filter: 'brightness(0.86)',
+        },
+        {
+          y: 0,
+          filter: 'brightness(1)',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.fate-classics',
+            start: 'top 94%',
+            end: 'top 34%',
+            scrub: 0.9,
+            invalidateOnRefresh: true,
+          },
+        },
+      )
+
+      const toolEntries = gsap.utils.toArray<HTMLElement>('.fate-tool-entry')
+      toolEntries.forEach((entry, index) => {
+        const visual = entry.querySelector<HTMLElement>('.fate-tool-visual')
+        const copyWrap = entry.querySelector<HTMLElement>('.fate-tool-copy')
+        const copy = entry.querySelectorAll<HTMLElement>('.fate-tool-copy > *')
+        if (!visual || !copyWrap) return
+
+        const reveal = gsap.timeline({
+          scrollTrigger: {
+            trigger: entry,
+            start: 'top 82%',
+            once: true,
+          },
+        })
+
+        reveal.fromTo(
+          visual,
+          {
+            autoAlpha: 0.36,
+            scale: 0.9,
+            rotate: index % 2 === 0 ? -14 : 14,
+            filter: 'brightness(0.76)',
+          },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            rotate: index % 2 === 0 ? -7 : 7,
+            filter: 'brightness(1)',
+            duration: 1.15,
+            ease: 'power3.out',
+          },
+          0,
+        )
+        reveal.fromTo(
+          copy,
+          { autoAlpha: 0, y: 42 },
+          { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.14, ease: 'power3.out' },
+          0.16,
+        )
+
+        gsap.fromTo(
+          visual,
+          { yPercent: -9 },
+          {
+            yPercent: 11,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: entry,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.9,
+            },
+          },
+        )
+
+        gsap.fromTo(
+          copyWrap,
+          { yPercent: 14 },
+          {
+            yPercent: -12,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: entry,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.1,
+            },
+          },
+        )
+      })
+
+      gsap.to('.fate-marquee-track', {
+        xPercent: -50,
+        duration: 24,
+        repeat: -1,
+        ease: 'none',
+      })
+    },
+    { scope: homeRef },
+  )
+
+  useGSAP(
+    () => {
+      if (!dailyOpen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      gsap.fromTo(
+        '.fate-daily-detail > *',
+        { autoAlpha: 0, y: 38 },
+        { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.11, ease: 'power3.out' },
+      )
+    },
+    { scope: homeRef, dependencies: [dailyOpen] },
+  )
+
   return (
-    <div>
+    <div className="fate-home" ref={homeRef}>
       <section className="hero">
-        <div className="hero-bg" style={{ backgroundImage: 'url(/home/mmeett-fate-cloud-scroll.jpg)' }} aria-hidden />
+        <div className="hero-bg" aria-hidden>
+          <picture>
+            <source media="(max-width: 640px)" srcSet={publicAsset('/home/optimized/hero-mobile.webp')} type="image/webp" />
+            <img
+              src={publicAsset('/home/optimized/hero-desktop.webp')}
+              alt=""
+              width="1920"
+              height="820"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
+        </div>
         <div className="hero-inner">
-          <span className="hero-tag">
-            {t('东方命理，云海问卦', 'Eastern divination · cloud sea oracle')}
-          </span>
-          <h1 className="hero-title">MMEETT Fate</h1>
+          <h1 className="hero-title">{t('不问注定，只问此刻该怎么走。', 'Not fate, but the next right move.')}</h1>
           <p className="hero-sub">MMEETT FATE</p>
           <p className="hero-desc">
-            {t('天地之间，万事皆有迹可循。', 'Between heaven and earth, every pattern leaves a trace.')}
-            <br />
             {t(
-              '八字、紫微、六爻、塔罗、古籍与人格测试，一屏进入。',
-              'Bazi, Zi Wei, hexagrams, tarot, classics and personality tests open in one place.',
+              '八字、紫微、六爻、塔罗——二十八种东方推演法门，收进一座云台。说出你的问题，我们告诉你哪种问法最合适。',
+              'Bazi, Zi Wei, hexagrams and tarot gather in one field. Tell us the question, and we guide you to the right method.',
             )}
           </p>
           <div className="hero-actions">
-            <Link className="btn btn-primary" to="/tools">
-              {t('开始入局', 'Start reading')}
-            </Link>
-            <Link className="btn" to="/games/daily-lottery">
-              {t('每日摇签', 'Daily draw')}
-            </Link>
+            <a className="btn btn-primary" href="#daily">
+              ▶ {t('Start', 'Start')}
+            </a>
           </div>
         </div>
       </section>
 
-      <section className="section home-dark">
-        <div className="container">
-          <div className="home-split">
-            <div className="home-intro">
-              <span className="en-label home-dark-label">{t('云海问卦', 'MMEETT Fate')}</span>
-              <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)' }}>
-                {t('一屏入局，诸术同参。', 'One field, many ways to read the pattern.')}
-              </h2>
-              <p className="home-dark-copy" style={{ lineHeight: 1.8 }}>
-                {t(
-                  '以时间、地点、所问与盘面证据为轴，把命盘、卦象、牌阵和古籍线索收束成清晰的入局路径。先定信息，再看结构，最后落到可执行的判断。',
-                  'Time, place, question and chart evidence are arranged into a focused reading path. Choose the entry, then let the result speak in order.',
-                )}
-              </p>
-              <div className="stat-row" style={{ margin: '0.5rem 0 0.5rem' }}>
-                <div className="stat">
-                  <b>{tools.length}</b>
-                  <span>{t('工具', 'tools')}</span>
-                </div>
-                <div className="stat">
-                  <b>48</b>
-                  <span>{t('古籍', 'classics')}</span>
-                </div>
-                <div className="stat">
-                  <b>78</b>
-                  <span>{t('塔罗', 'tarot cards')}</span>
-                </div>
-              </div>
-              <Link className="btn btn-gold" style={{ justifySelf: 'start' }} to="/tools">
-                {t('进入全部工具 →', 'Open all tools')}
-              </Link>
-            </div>
+      <section className={`fate-daily fate-motion-section ${dailyOpen ? 'is-open' : ''}`} id="daily">
+        <div className="fate-daily-intro">
+          <span className="fate-section-tag" data-reveal>DAILY HEXAGRAM</span>
+          <h2 data-reveal>{t('每日一卦', 'Daily Hexagram')}</h2>
+          <p data-reveal>{t('每天固定一卦，当天结果不变——早晨看一眼，心里有个底。', 'One fixed hexagram each day, so the result remains steady.')}</p>
+          <span className="fate-daily-date" data-reveal>{dateLabel}</span>
+          <button type="button" className="fate-reveal-button" data-reveal onClick={() => setDailyOpen((open) => !open)}>
+            {dailyOpen ? t('收起今日卦象', 'Hide today’s reading') : t('✦ 揭晓今日卦象', 'Reveal today’s reading')}
+          </button>
 
-            <div className="home-grid-2">
-              {hotTools.map((it) => (
-                <Link key={it.to} to={it.to} className="tool-mini">
-                  <span className="tm-ico">{it.ico}</span>
-                  <div>
-                    <h3>{lang === 'en' ? it.en : it.zh}</h3>
-                    <p>{lang === 'en' ? it.subEn : it.subZh}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="home-split" style={{ alignItems: 'stretch' }}>
-            <div className="home-intro" style={{ alignContent: 'center' }}>
-              <h2>{t('两种新的入局方式', 'TWO NEW WAYS TO BEGIN')}</h2>
-              <p className="soft" style={{ lineHeight: 1.8 }}>
-                {t(
-                  '传统推演完整保留，自己与关系各自成章。它们是独立产品，不替代命盘、卦象、时令和实用工具；你仍然可以按原来的方式进入全部推演。',
-                  'Traditional readings stay intact. Self and relationships get their own focused space. These are dedicated products, not replacements for the traditional tools already available.',
-                )}
-              </p>
-            </div>
-            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-              <Link to="/personality" className="feature-card">
-                <div className="fc-bg" style={{ backgroundImage: 'url(/personality/moonlit-editorial-desk.jpg)' }} aria-hidden />
-                <span className="en-label fc-en">PERSONALITY ATLAS</span>
-                <h3>{t('人格图谱', 'Personality Atlas')}</h3>
-                <span className="badge" style={{ alignSelf: 'flex-start' }}>
-                  {t('免费体验', 'Free preview')}
-                </span>
-                <p>
-                  {t(
-                    '从偏好、压力反应和关系方式理解自己。MBTI 与阴影人格独立成章，不混进传统推演。',
-                    'Understand preferences, stress reactions and relationship patterns through two focused self-reflection tests.',
-                  )}
-                </p>
-                <span className="fc-link">{t('进入人格图谱 →', 'Open the atlas')}</span>
-              </Link>
-              <Link to="/relationship-lab" className="feature-card">
-                <div
-                  className="fc-bg"
-                  style={{ backgroundImage: 'url(/relationship/relationship-mirror-morning-fast.webp)' }}
-                  aria-hidden
-                />
-                <span className="en-label fc-en">RELATIONSHIP LAB</span>
-                <h3>{t('关系实验室', 'Relationship Lab')}</h3>
-                <span className="badge" style={{ alignSelf: 'flex-start' }}>
-                  {t('免费体验', 'Free preview')}
-                </span>
-                <p>
-                  {t(
-                    '先分清事实、猜测和需要，再决定下一句话怎么说。',
-                    'Separate facts from assumptions, name the need underneath, and draft a sentence you can actually send.',
-                  )}
-                </p>
-                <span className="fc-link">{t('进入关系实验室 →', 'Open the lab')}</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="section-head">
-            <h2>{t('观象不是堆工具，先把问法立住。', 'Read the pattern before chasing an answer.')}</h2>
-            <p>
-              {t(
-                '真正有用的不是一下子打开所有工具，而是先定时间、定所问、定取象，再让盘面证据自己说话。',
-                'The useful part is not opening every method at once. It is choosing the right gate, checking the time, then letting evidence speak.',
-              )}
-            </p>
-          </div>
-          <div className="home-split" style={{ alignItems: 'stretch' }}>
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span className="serif" style={{ fontSize: '2rem', color: 'var(--accent)' }}>
-                {lang === 'en' ? '01' : '一'}
-              </span>
-              <h3 style={{ margin: '0.5rem 0' }}>
-                {t('一事一问，一门入局，一条证据链。', 'One question, one gate, one line of evidence.')}
-              </h3>
-              <p className="soft" style={{ lineHeight: 1.8 }}>
-                {t(
-                  '问命局结构，就进命盘；问眼前取舍，就进卜筮；查日常节律，就放在实用小工具。界面要清，判断要狠，证据不够就不把话说满。',
-                  'If the question is about a life structure, start with a chart. If it is about an immediate choice, use an oracle. If it is daily timing, keep it in the utility shelf. The interface should stay calm; the judgement should stay sharp.',
-                )}
-              </p>
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                <Link className="btn btn-sm" to="/tools">
-                  {t('去选工具', 'Choose the gate')}
-                </Link>
-                <Link className="btn btn-sm" to="/classics">
-                  {t('看古籍书楼', 'Read the sources')}
-                </Link>
-              </div>
-            </div>
-            <div className="home-grid-2">
-              {gridSteps.map((s) => (
-                <div key={s.titleZh} className="card">
-                  <span style={{ color: 'var(--accent)', fontSize: '1.1rem' }}>{s.ico}</span>
-                  <h3 style={{ fontSize: '1rem', margin: '0.35rem 0' }}>
-                    {lang === 'en' ? s.titleEn : s.titleZh}
-                  </h3>
-                  <p className="soft" style={{ fontSize: '0.84rem' }}>
-                    {lang === 'en' ? s.bodyEn : s.bodyZh}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="home-split" style={{ alignItems: 'stretch' }}>
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', justifyContent: 'center' }}>
-              <span className="en-label">DAILY HEXAGRAM</span>
-              <h2 style={{ margin: 0 }}>{t('每日一卦', 'Daily Hexagram')}</h2>
-              <p className="soft">
-                {t(
-                  '每天生成一张固定卦象，把当天的行动重点先提出来。点进工具后可按姓名、性别和日期重新查看。',
-                  'A fixed daily hexagram highlights the day’s action focus. Open the tool to regenerate it with your own name, gender and date.',
-                )}
-              </p>
-              <Link className="btn btn-primary" style={{ alignSelf: 'flex-start', marginTop: '0.5rem' }} to="/tools/daily-hexagram">
-                {t('打开今日卦 →', 'Open Today’s Hexagram')}
-              </Link>
-            </div>
-            <div className="card home-daily-row">
-              <div>
-                <p className="muted" style={{ fontSize: '0.85rem' }}>
-                  {dateLabel} · {t('每日一卦', 'Daily Hexagram')}
-                </p>
-                <p style={{ marginTop: '0.75rem' }}>
-                  {t('本卦', 'Original Hexagram')}：
-                  <strong>{daily.ben.name}</strong>
-                  （{t('上', 'upper')}
+          {dailyOpen ? (
+            <div className="fate-gua-reveal">
+              <div className="fate-gua-card">
+                <HexLines lines={daily.lines} />
+                <strong>{daily.ben.name}</strong>
+                <span>
+                  {t('上', 'upper')}
                   {lang === 'en' ? daily.ben.upper.nameEn : daily.ben.upper.name}
                   {t('下', 'lower')}
-                  {lang === 'en' ? daily.ben.lower.nameEn : daily.ben.lower.name}）
-                </p>
-                {daily.bian ? (
-                  <p style={{ marginTop: '0.25rem' }}>
-                    {t('变卦', 'Changed Hexagram')}：
-                    <strong>{daily.bian.name}</strong>
-                    （{t('上', 'upper')}
-                    {lang === 'en' ? daily.bian.upper.nameEn : daily.bian.upper.name}
-                    {t('下', 'lower')}
-                    {lang === 'en' ? daily.bian.lower.nameEn : daily.bian.lower.name}）
-                  </p>
-                ) : null}
-                <p style={{ marginTop: '0.5rem' }}>
-                  {t('今日提醒', 'Daily Note')}：
-                  <strong style={{ color: 'var(--accent)' }}>
-                    {lang === 'en' ? daily.keywordEn : daily.keyword}
-                  </strong>
-                </p>
-              </div>
-              <div style={{ color: 'var(--accent)' }}>
-                <HexLines lines={daily.lines} />
+                  {lang === 'en' ? daily.ben.lower.nameEn : daily.ben.lower.name}
+                </span>
               </div>
             </div>
+          ) : null}
+        </div>
+
+        {dailyOpen ? (
+          <div className="fate-daily-detail" aria-live="polite">
+            <span className="fate-section-tag">{t('今日详解', 'TODAY’S READING')}</span>
+            <h3>{t('增益之日，主动有得', 'A day for active progress')}</h3>
+            <p>
+              <strong>{t('风雷相助，外力正当。', 'Wind and thunder move together.')}</strong>
+              {t(
+                '今天开口求助、推进合作、启动拖延已久的事，都容易得到回应；而独自决断、按兵不动，则容易错过送上门的助力。',
+                'Ask for help, move a collaboration forward, or restart something delayed. Acting alone may miss support already within reach.',
+              )}
+            </p>
+            <div className="fate-daily-chips">
+              <span className="is-good">{t('合作', 'Collaborate')}</span>
+              <span className="is-good">{t('求助', 'Ask')}</span>
+              <span className="is-good">{t('开启', 'Begin')}</span>
+              <span className="is-warn">{t('独断', 'Go alone')}</span>
+              <span className="is-warn">{t('拖延', 'Delay')}</span>
+            </div>
+            <span className="fate-gold-button" aria-disabled="true">
+              {t('卦辞解读', 'Read the hexagram')}
+            </span>
           </div>
+        ) : null}
+      </section>
+
+      <section className="fate-classics fate-motion-section" ref={classicSectionRef}>
+        <div className="fate-classics-sticky">
+          <header className="fate-classics-head">
+            <span className="fate-section-tag" data-reveal>CLASSICS · {t('古籍书楼', 'CLASSIC LIBRARY')}</span>
+            <h2 data-reveal>
+              {t('阅读古籍，', 'Read the classics, ')}<em>{t('慢慢入局。', 'enter slowly.')}</em>
+            </h2>
+          </header>
+          <div className="fate-classics-viewport">
+            <div className="fate-classics-track" ref={classicTrackRef}>
+              {classics.slice(0, 6).map((book) => (
+                <article className="fate-classic-card" tabIndex={0} key={book.id}>
+                  <div className="fate-classic-inner">
+                    <div className="fate-classic-face fate-classic-front">
+                      <picture>
+                        <source media="(max-width: 640px)" srcSet={classicMobileImages[book.id]} type="image/webp" />
+                        <img src={classicImages[book.id]} alt="" loading="lazy" decoding="async" width="700" height="1080" />
+                      </picture>
+                      <div className="fate-classic-meta">
+                        <h3>{book.title}</h3>
+                        <p>{book.dynasty} · {book.author}</p>
+                        <span>{book.tools}</span>
+                      </div>
+                    </div>
+                    <div className="fate-classic-face fate-classic-back">
+                      <h3>{book.title}</h3>
+                      <small>{book.dynasty} · {book.author}</small>
+                      <p>{book.brief}</p>
+                      <div className="fate-topic-list">
+                        {book.topics.split('、').slice(0, 3).map((topic) => <span key={topic}>{topic}</span>)}
+                      </div>
+                      <strong>{t('去古籍书楼读 →', 'Read in the library →')}</strong>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+          <span className="fate-classics-tip">SCROLL ↓ · {t('横向翻阅古籍', 'Browse the shelf')}</span>
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-end',
-              flexWrap: 'wrap',
-              gap: '1rem',
-              marginBottom: '1.5rem',
-            }}
-          >
-            <div className="section-head" style={{ margin: 0 }}>
-              <h2>{t('先看懂关系，再看结果', 'Understand the structure before the result')}</h2>
-              <p>
-                {t(
-                  '把五行、九宫、八字判断顺序拆成节点图，减少术语堆砌，让新用户也能快速理解页面结果。',
-                  'Relationship diagrams break down five elements, nine palaces and chart-reading order into visible nodes.',
-                )}
-              </p>
-            </div>
-            <Link className="btn btn-sm" to="/knowledge">
-              {t('全部图解 →', 'All Diagrams')}
-            </Link>
-          </div>
-          <div className="grid home-diagram-grid">
-            {diagrams.slice(0, 6).map((d) => (
-              <div key={d.id} className="card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                  <h3 style={{ fontSize: '1rem' }}>{lang === 'en' ? d.en : d.zh}</h3>
-                  {lang === 'zh' ? <span className="en-label">{d.en}</span> : null}
-                </div>
-                <div style={{ display: 'grid', placeItems: 'center', minHeight: 120, margin: '0.75rem 0' }}>
-                  <KnowledgeDiagram d={d} compact />
-                </div>
+      <section className="fate-hot fate-motion-section" id="hot">
+        <header className="fate-centered-head">
+          <span className="fate-section-tag" data-reveal>HOT · {t('热门推演', 'POPULAR READINGS')}</span>
+          <h2 data-reveal>{t('更多的工具', 'More tools')}</h2>
+        </header>
+        <div className="fate-tool-showcase">
+          {hotTools.map((tool) => (
+            <article className="fate-tool-entry" key={tool.zh}>
+              <div className="fate-tool-visual">
+                <picture>
+                  <source media="(max-width: 640px)" srcSet={tool.mobileImage} type="image/webp" />
+                  <img src={tool.image} alt="" loading="lazy" decoding="async" width="780" height="1040" />
+                </picture>
+              </div>
+              <div className="fate-tool-copy">
+                <h3>{lang === 'en' ? tool.en : tool.zh}</h3>
+                <p>{lang === 'en' ? tool.introEn : tool.introZh}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <span className="fate-outline-button" data-reveal aria-disabled="true">{t('更多工具', 'More tools')}</span>
+      </section>
+
+      <div className="fate-marquee" aria-hidden="true">
+        <div className="fate-marquee-track">
+          <span>{t('八字 · 紫微 · 六爻 · 塔罗 · 看见结构 · 回应当下 · ', 'BAZI · ZI WEI · LIU YAO · TAROT · READ THE PATTERN · ')}</span>
+          <span>{t('八字 · 紫微 · 六爻 · 塔罗 · 看见结构 · 回应当下 · ', 'BAZI · ZI WEI · LIU YAO · TAROT · READ THE PATTERN · ')}</span>
+        </div>
+      </div>
+
+      <section className="fate-questions fate-motion-section">
+        <div className="fate-question-wrap">
+          <h2 data-reveal>{t('问题', 'Questions')}</h2>
+          <div className="fate-question-list">
+            {intentOptions.map((option) => (
+              <div key={option.zh} className="fate-question-row" data-reveal>
+                <span className="fate-question-text">{lang === 'en' ? option.en : option.zh}</span>
+                <span aria-hidden>+</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <div className="card" style={{ textAlign: 'center', padding: '2.5rem 1.5rem' }}>
-            <span className="en-label">TIME ORACLE</span>
-            <p className="serif" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.4rem)', margin: '1rem 0' }}>
-              {lang === 'en' ? signs[signIdx].en : signs[signIdx].zh}
-            </p>
-            <button type="button" className="btn" onClick={() => setSignIdx((i) => (i + 1) % signs.length)}>
-              {t('换一句', 'Another line')}
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="home-split">
-            <div className="card" style={{ display: 'grid', placeItems: 'center', minHeight: 220 }}>
-              <div className="taiji" aria-hidden />
-            </div>
-            <div>
-              <span className="en-label">ABOUT</span>
-              <h2 style={{ margin: '0.5rem 0 1rem' }}>
-                {t('以现代设计重新呈现传统文化', 'Present tradition through modern design')}
-              </h2>
-              <p className="soft" style={{ lineHeight: 1.9 }}>
-                {t(
-                  '我们把复杂的传统术数界面整理为清晰、可扫描的现代工具。排盘与解释分开：先呈现可核对的盘面，再给出解读。所有结果仅供传统文化体验与自我观察参考，不替代专业建议，也不制造焦虑。',
-                  'We reshape dense traditional interfaces into clear, scannable tools. Charts come first, then interpretation. Everything is for cultural experience and self-observation — not professional advice, and not anxiety.',
-                )}
-              </p>
-              <Link className="btn" style={{ marginTop: '1.5rem' }} to="/about">
-                {t('了解更多 →', 'Learn more →')}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
